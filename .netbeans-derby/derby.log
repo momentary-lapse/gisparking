@@ -1,25 +1,64 @@
-Sat Mar 09 19:59:18 YEKT 2013 : Сетевой сервер Apache Derby Network Server - 10.8.1.2 - (1095077) запущен и готов принимать соединения на порту 1527 на {3} 
+Sat Mar 09 20:45:06 YEKT 2013 : Сетевой сервер Apache Derby Network Server - 10.8.1.2 - (1095077) запущен и готов принимать соединения на порту 1527 на {3} 
 ----------------------------------------------------------------
-Sat Mar 09 19:59:18 YEKT 2013:
- Производится загрузка Derby версии The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): экземпляр a816c00e-013d-4f72-d354-ffffc8c9d00c
-в каталоге базы данных /home/anton/NetBeansProjects/GISParking/.netbeans-derby/ParkingDB  sun.misc.Launcher$AppClassLoader@1b2dd1b8 
+Sat Mar 09 20:45:06 YEKT 2013:
+ Производится загрузка Derby версии The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): экземпляр a816c00e-013d-4f9c-c1fe-ffffc8c9d00c
+в каталоге базы данных /home/anton/NetBeansProjects/GISParking/.netbeans-derby/ParkingDB  sun.misc.Launcher$AppClassLoader@5acac268 
 
-java.vendor=Oracle Corporation
-java.runtime.version=1.7.0_13-b20
-user.dir=/home/anton/glassfish-3.1.2.2/javadb
+java.vendor=Sun Microsystems Inc.
+java.runtime.version=1.6.0_24-b24
+user.dir=/home/anton/glassfish-3.1.2/javadb
 derby.system.home=/home/anton/NetBeansProjects/GISParking/.netbeans-derby
 Запущен загрузчик классов базы данных - derby.database.classpath=''
+Sat Mar 09 20:45:06 YEKT 2013 Thread[DRDAConnThread_3,5,main] (XID = 170), (SESSIONID = 0), (DATABASE = ParkingDB), (DRDAID = {1}), Cleanup action starting
+java.sql.SQLNonTransientConnectionException: Произошла ошибка аутентификации соединения.  Причина: Неправильная аутентификация..
+	at org.apache.derby.impl.jdbc.SQLExceptionFactory40.getSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.generateCsSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.newSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.checkUserCredentials(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection30.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection40.<init>(Unknown Source)
+	at org.apache.derby.jdbc.Driver40.getNewEmbedConnection(Unknown Source)
+	at org.apache.derby.jdbc.InternalDriver.connect(Unknown Source)
+	at org.apache.derby.jdbc.AutoloadedDriver.connect(Unknown Source)
+	at org.apache.derby.impl.drda.Database.makeConnection(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.getConnFromDatabaseName(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.verifyUserIdPassword(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.parseSECCHK(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.parseDRDAConnection(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.processCommands(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.run(Unknown Source)
+Caused by: java.sql.SQLException: Произошла ошибка аутентификации соединения.  Причина: Неправильная аутентификация..
+	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.SQLExceptionFactory40.wrapArgsForTransportAcrossDRDA(Unknown Source)
+	... 19 more
+============= begin nested exception, level (1) ===========
+java.sql.SQLException: Произошла ошибка аутентификации соединения.  Причина: Неправильная аутентификация..
+	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.SQLExceptionFactory40.wrapArgsForTransportAcrossDRDA(Unknown Source)
+	at org.apache.derby.impl.jdbc.SQLExceptionFactory40.getSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.generateCsSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.newSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.checkUserCredentials(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection30.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection40.<init>(Unknown Source)
+	at org.apache.derby.jdbc.Driver40.getNewEmbedConnection(Unknown Source)
+	at org.apache.derby.jdbc.InternalDriver.connect(Unknown Source)
+	at org.apache.derby.jdbc.AutoloadedDriver.connect(Unknown Source)
+	at org.apache.derby.impl.drda.Database.makeConnection(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.getConnFromDatabaseName(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.verifyUserIdPassword(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.parseSECCHK(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.parseDRDAConnection(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.processCommands(Unknown Source)
+	at org.apache.derby.impl.drda.DRDAConnThread.run(Unknown Source)
+============= end nested exception, level (1) ===========
+Cleanup action completed
+Sat Mar 09 20:45:06 YEKT 2013 Thread[DRDAConnThread_3,5,main] (DATABASE = ParkingDB), (DRDAID = {1}), Произошла ошибка аутентификации соединения.  Причина: Неправильная аутентификация..
 ----------------------------------------------------------------
-Sat Mar 09 19:59:32 YEKT 2013:
-Завершается работа экземпляра a816c00e-013d-4f72-d354-ffffc8c9d00c
-Sat Mar 09 19:59:32 YEKT 2013 Thread[DRDAConnThread_4,5,main] (DATABASE = ParkingDB), (DRDAID = {2}), База данных 'ParkingDB' завершила работу.
-----------------------------------------------------------------
-Sat Mar 09 19:59:40 YEKT 2013:
- Производится загрузка Derby версии The Apache Software Foundation - Apache Derby - 10.8.1.2 - (1095077): экземпляр 6c44409f-013d-4f72-d354-ffffc8c9d00c
-в каталоге базы данных /home/anton/NetBeansProjects/GISParking/.netbeans-derby/ParkingDB  sun.misc.Launcher$AppClassLoader@1b2dd1b8 
-
-java.vendor=Oracle Corporation
-java.runtime.version=1.7.0_13-b20
-user.dir=/home/anton/glassfish-3.1.2.2/javadb
-derby.system.home=/home/anton/NetBeansProjects/GISParking/.netbeans-derby
-Запущен загрузчик классов базы данных - derby.database.classpath=''
+Sat Mar 09 20:46:13 YEKT 2013: Shutting down Derby engine
