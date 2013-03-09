@@ -23,7 +23,7 @@ public class IndexController {
     
     
     
-    @RequestMapping(value = "index.htm", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public String indexGet(ModelMap model) {
        
         ml.fillArray();
@@ -32,7 +32,7 @@ public class IndexController {
 
     }
     
-    @RequestMapping(value = "index.htm", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     public String indexPost(HttpServletRequest request, ModelMap model) {
 
         ml.deleteById(Long.parseLong(request.getParameter("id")));
