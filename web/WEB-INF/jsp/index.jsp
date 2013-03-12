@@ -28,36 +28,47 @@
                 var infowindows = [];
                 var i = 0;
                 
+            <c:if test="${empty marker}">
+                <c:forEach var="mark" items="${marks}">
+                        markers[i] = new google.maps.Marker({
+                            position: new google.maps.LatLng(${mark.north}, ${mark.east}),
+                            map: map
+                                
+                        });
+                    
+                        infowindows[i] = new google.maps.InfoWindow({
+                            content: '${mark.info}'
+                        });
+                        google.maps.event.addListener(markers[i], 'click', (function(i) {
+                            return function() {
+                                infowindows[i].open(map, markers[i]);
+                            }
+                        })(i));
+                    
+                        i++;
+                </c:forEach>
+            </c:if>
                 
-                
-            <c:forEach var="mark" items="${marks}">
-                    markers[i] = new google.maps.Marker({
-                        position: new google.maps.LatLng(${mark.north}, ${mark.east}),
+            <c:if test="${not empty marker}">
+                    var marker  = new google.maps.Marker({
+                        position: new google.maps.LatLng(${marker.north}, ${marker.east}),
                         map: map
                                 
                     });
-                    
-                    infowindows[i] = new google.maps.InfoWindow({
-                        content: '${mark.info}'
+                    var infowindow = new google.maps.InfoWindow({
+                        content: '${marker.info}'
                     });
-                    google.maps.event.addListener(markers[i], 'click', (function(i) {
-                        return function() {
-                            infowindows[i].open(map, markers[i]);
-                        }
-                    })(i));
-                    
-                    i++;
-            </c:forEach>
+                    google.maps.event.addListener(marker, 'click', function() {
+                        infowindow.open(map, marker)
+                    });
+
+            </c:if>
                 
                 
                 }
         </script>
     </head>
     <body onload="initialize()">
-        <form action="index.htm" method="POST">
-            <input type="text" name="id" />
-            <input type="submit" name="Submit" />
-        </form>
         <div id="map_canvas" style="height: 100%; width: 100%"></div>
     </body>
 </html>

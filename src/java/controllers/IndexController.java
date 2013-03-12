@@ -8,9 +8,11 @@ import com.sun.xml.wss.impl.policy.MLSPolicy;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import models.MarkerLibrary;
+import org.jboss.weld.context.http.HttpRequestContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -18,12 +20,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class IndexController {
 
-    MarkerLibrary ml = new MarkerLibrary();
+    MarkerLibrary ml = new MarkerLibrary(); 
+    
+    @RequestMapping(value = "/")
+    public String go() {
+        return "redirect:start";
+    }
     
     
+    @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
+    public String indexGetById(@PathVariable int id, ModelMap model) {
+       
+        ml.fillArray();
+        model.addAttribute("marker", ml.getMarkers().get(id));
+        return "index";
+
+    }
     
-    
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/start", method = RequestMethod.GET)
     public String indexGet(ModelMap model) {
        
         ml.fillArray();
@@ -32,14 +46,14 @@ public class IndexController {
 
     }
     
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public String indexPost(HttpServletRequest request, ModelMap model) {
-
-        ml.deleteById(Long.parseLong(request.getParameter("id")));
-        model.addAttribute("marks", ml.getMarkers());
-        return "index";
-
-    }
+//    @RequestMapping(value = "/start", method = RequestMethod.POST)
+//    public String indexPost(HttpServletRequest request, ModelMap model) {
+//
+//        ml.deleteById(Long.parseLong(request.getParameter("id")));
+//        model.addAttribute("marks", ml.getMarkers());
+//        return "index";
+//
+//    }
     
     
 }
