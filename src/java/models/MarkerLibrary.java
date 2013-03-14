@@ -29,6 +29,26 @@ public class MarkerLibrary {
     public ArrayList<Marker> getMarkers() {
         return markers;
     }
+    
+    public Marker getById(long id) {
+
+        if (markers.isEmpty()) {
+            return null;
+        }
+
+        int k = 0;
+        for (int i = 0; i < markers.size(); i++) {
+            if (markers.get(i).getId() == id) {
+                k = i;
+                break;
+            }
+        }
+        if (markers.get(k).getId() == id) {
+            return markers.get(k);
+        }
+        return null;
+
+    }
 
     public void deleteById(long id) {
 

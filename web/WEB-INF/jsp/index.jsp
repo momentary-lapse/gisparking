@@ -29,15 +29,15 @@
                 var i = 0;
                 
             <c:if test="${empty marker}">
-                <c:forEach var="mark" items="${marks}">
+                <c:forEach var="m" items="${markers}">
                         markers[i] = new google.maps.Marker({
-                            position: new google.maps.LatLng(${mark.north}, ${mark.east}),
+                            position: new google.maps.LatLng(${m.north}, ${m.east}),
                             map: map
                                 
                         });
                     
                         infowindows[i] = new google.maps.InfoWindow({
-                            content: '${mark.info}'
+                            content: '${m.info}'
                         });
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
