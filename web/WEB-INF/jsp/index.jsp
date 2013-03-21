@@ -56,7 +56,8 @@
                                 
                     });
                     var infowindow = new google.maps.InfoWindow({
-                        content: '${marker.info}'
+                        content: '<IMG ALIGN="Left" SRC="${path}"> ${marker.info}'
+                        
                     });
                     google.maps.event.addListener(marker, 'click', function() {
                         infowindow.open(map, marker)
@@ -69,6 +70,8 @@
         </script>
     </head>
     <body onload="initialize()">
+        ${path}
+        <div><img src="1.jpg" /></div>
         <div id="map_canvas" style="height: 100%; width: 100%"></div>
     </body>
 </html>
