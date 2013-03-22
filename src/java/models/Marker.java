@@ -4,61 +4,63 @@
  */
 package models;
 
-public class Marker {
-    
-    private long id;
-    private double north, east;
-    private String info;
-    
-    public Marker(double north, double east, String info) {
-        
-        this.north = north;
-        this.east = east;
-        this.info = info;
-        
-    }
-    
-    public Marker(double north, double east) {
-        
-        this.north = north;
-        this.east = east;
-        
-    }
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-    public long getId() {
+@Entity
+@Table(name="MARKERS")
+public class Marker implements Serializable {
+    
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="id", nullable=false, unique=true)
+    private Long id;
+    
+    @Column(name="north", nullable=false)
+    private double north;
+    
+    @Column(name="east", nullable=false)
+    private double east;
+    
+    @Column(name="phone", nullable=false)
+    private String phone;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-    
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-    
-    public double getNorth() {
-        return north;
     }
 
     public double getEast() {
         return east;
     }
 
+    public void setEast(double east) {
+        this.east = east;
+    }
+
+    public double getNorth() {
+        return north;
+    }
+
     public void setNorth(double north) {
         this.north = north;
     }
 
-    
-    public void setEast(double east) {
-        this.east = east;
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
     
-    
-    
-    
+        
 }

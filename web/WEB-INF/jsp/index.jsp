@@ -37,7 +37,7 @@
                         });
                     
                         infowindows[i] = new google.maps.InfoWindow({
-                            content: '${m.info}'
+                            content: '${m.phone}'
                         });
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
@@ -56,7 +56,7 @@
                                 
                     });
                     var infowindow = new google.maps.InfoWindow({
-                        content: '<IMG ALIGN="Left" SRC="${path}"> ${marker.info}'
+                        content: '<IMG ALIGN="Left" SRC="${path}"> ${marker.phone}'
                         
                     });
                     google.maps.event.addListener(marker, 'click', function() {
@@ -70,8 +70,6 @@
         </script>
     </head>
     <body onload="initialize()">
-        ${path}
-        <div><img src="1.jpg" /></div>
         <div id="map_canvas" style="height: 100%; width: 100%"></div>
     </body>
 </html>

@@ -5,6 +5,7 @@
         <param-value>
             /WEB-INF/applicationContext.xml
             /WEB-INF/dispatcher-servlet.xml
+            /WEB-INF/db-config.xml
         </param-value>
     </context-param>
     <listener>

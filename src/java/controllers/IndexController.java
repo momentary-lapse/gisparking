@@ -4,23 +4,12 @@
  */
 package controllers;
 
-import com.sun.xml.wss.impl.policy.MLSPolicy;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import models.MarkerLibrary;
-import org.jboss.weld.context.http.HttpRequestContext;
+import models.MarkerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,7 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class IndexController {
 
-    MarkerLibrary ml = new MarkerLibrary();
+    @Autowired
+    MarkerService markerService;
 
     @RequestMapping(value = "/")
     public String go() {
@@ -38,10 +28,10 @@ public class IndexController {
     }
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
-    public String indexGetById(@PathVariable int id, HttpServletRequest request, ModelMap model) {
+    public String indexGetById(@PathVariable Long id, HttpServletRequest request, ModelMap model) {
 
         String path = "images/mlpfim-twilight-sparkle-wallpaper_1024x768.jpg";
-        model.addAttribute("marker", ml.getById(id));
+        model.addAttribute("marker", markerService.getById(id));
         model.addAttribute("path", path);
         return "index";
 
@@ -51,23 +41,23 @@ public class IndexController {
     public String indexGet(ModelMap model) {
 
         //ml.fillArray();
-        model.addAttribute("markers", ml.getMarkers());
+        model.addAttribute("markers", markerService.getList());
         return "index";
 
     }
 
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
-    public String markerGetById(@PathVariable int id, ModelMap model) {
+    public String markerGetById(@PathVariable Long id, ModelMap model) {
 
-        model.addAttribute("marker", ml.getById(id));
+        model.addAttribute("marker", markerService.getById(id));
         return "marker";
 
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public String markerDeleteById(@PathVariable int id, ModelMap model) {
+    public String markerDeleteById(@PathVariable Long id, ModelMap model) {
 
-        ml.deleteById(id);
+        markerService.deleteById(id);
         return "redirect:/start";
 
     }
@@ -75,7 +65,7 @@ public class IndexController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String listGet(ModelMap model) {
 
-        model.addAttribute("list", ml.getMarkers());
+        model.addAttribute("list", markerService.getList());
         return "list";
 
     }
