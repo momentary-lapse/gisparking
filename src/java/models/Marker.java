@@ -29,6 +29,9 @@ public class Marker implements Serializable {
     
     @Column(name="phone", nullable=false)
     private String phone;
+    
+    @Column(name="image_url", nullable=false)
+    private String url;
 
     public Long getId() {
         return id;
@@ -60,6 +63,14 @@ public class Marker implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
     
         
