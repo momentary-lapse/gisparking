@@ -34,6 +34,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class IndexController {
+    
+    @Autowired
+    private String imagePath = "../images/";
+    
+    final int imageWidth = 300;
 
     @Autowired
     MarkerService markerService;
@@ -71,9 +76,10 @@ public class IndexController {
     public String markerDeleteById(@PathVariable Long id, ModelMap model) {
 
         Marker m = markerService.getById(id);
-        markerService.deleteById(id);
-        File f = new File("images/" + m.getUrl());
+        File f = new File(imagePath + m.getUrl());
         f.delete();
+        markerService.deleteById(id);
+        
         return "redirect:/start";
 
     }
@@ -102,12 +108,14 @@ public class IndexController {
         Timestamp ts = new Timestamp(date.getTime());
         String filename = ts.toString();
         filename = filename.replaceAll("\\s", "_");
-        String path = "images/" + filename;
+        String path = imagePath + filename;
 
         File imageFile = new File(path);
+        
         try {
+            imageFile.getParentFile().createNewFile();
             BufferedImage image = ImageIO.read(file.getInputStream());
-            image = ImageTransformer.scaleByWidth(image, 500);
+            image = ImageTransformer.scaleByWidth(image, imageWidth);
             imageFile.createNewFile();
             ImageIO.write(image, "jpg", imageFile);
             
@@ -131,7 +139,7 @@ public class IndexController {
     public @ResponseBody byte[] getImage(@PathVariable Long id, HttpServletResponse response) throws IOException {
        
         Marker m = markerService.getById(id);
-        BufferedImage image = ImageIO.read(new File("images/" + m.getUrl()));
+        BufferedImage image = ImageIO.read(new File(imagePath + m.getUrl()));
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", bao);
         return bao.toByteArray();
