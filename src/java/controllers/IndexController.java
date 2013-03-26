@@ -35,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class IndexController {
     
-    @Autowired
     private String imagePath = "../images/";
     
     final int imageWidth = 300;
