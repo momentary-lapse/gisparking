@@ -4,8 +4,23 @@
  */
 package controllers;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import models.ImageTransformer;
+import models.Marker;
 import models.MarkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -30,9 +46,7 @@ public class IndexController {
     @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
     public String indexGetById(@PathVariable Long id, HttpServletRequest request, ModelMap model) {
 
-        String path = "images/mlpfim-twilight-sparkle-wallpaper_1024x768.jpg";
         model.addAttribute("marker", markerService.getById(id));
-        model.addAttribute("path", path);
         return "index";
 
     }
@@ -40,7 +54,6 @@ public class IndexController {
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public String indexGet(ModelMap model) {
 
-        //ml.fillArray();
         model.addAttribute("markers", markerService.getList());
         return "index";
 
@@ -57,7 +70,10 @@ public class IndexController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String markerDeleteById(@PathVariable Long id, ModelMap model) {
 
+        Marker m = markerService.getById(id);
         markerService.deleteById(id);
+        File f = new File("images/" + m.getUrl());
+        f.delete();
         return "redirect:/start";
 
     }
@@ -76,46 +92,50 @@ public class IndexController {
     }
 
     @RequestMapping(value = "/form", method = RequestMethod.POST)
-    public String sendData(@RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
+    public String sendData(@RequestParam("north") Double north, @RequestParam("east") Double east, @RequestParam("phone") String phone, @RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
 
-        String path = "images/" + file.getOriginalFilename();
+        if (!"image/jpg".equals(file.getContentType()) && !"image/jpeg".equals(file.getContentType())) {
+            return "redirect:/form";
+        }
+        
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        String filename = ts.toString();
+        filename = filename.replaceAll("\\s", "_");
+        String path = "images/" + filename;
 
         File imageFile = new File(path);
         try {
+            BufferedImage image = ImageIO.read(file.getInputStream());
+            image = ImageTransformer.scaleByWidth(image, 500);
             imageFile.createNewFile();
-        } catch (Exception e) {
-            model.addAttribute("trace", e.toString());
+            ImageIO.write(image, "jpg", imageFile);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
             return "redirect:/form";
         }
-        try {
-            file.transferTo(imageFile);
-        } catch (Exception e) {
-            model.addAttribute("trace", e.toString());
-            return "redirect:/form";
-        }
+        
+        Marker m = new Marker();
+        m.setNorth(north);
+        m.setEast(east);
+        m.setPhone(phone);
+        m.setUrl(filename);
+        
+        markerService.add(m);
+        
         return "redirect:/start";
     }
     
-    /*@RequestMapping(value = "/images/{name}", method = RequestMethod.GET)
-    public void getImage(@PathVariable String name, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces="image/jpg")
+    public @ResponseBody byte[] getImage(@PathVariable Long id, HttpServletResponse response) throws IOException {
        
-        RandomAccessFile f = null;
-        byte[] image = null;
-        try {
-            f = new RandomAccessFile("images/" + name, "r");
-            image = new byte[(int)f.length()];
-            f.read(image);
-        } catch (IOException ex) {
-            Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        response.reset();
-        response.setBufferSize(image.length);
-        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
-        out.write(image, 0, image.length);
+        Marker m = markerService.getById(id);
+        BufferedImage image = ImageIO.read(new File("images/" + m.getUrl()));
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", bao);
+        return bao.toByteArray();
         
-        out.close();
-
-* 
-    }*/
+    }
     
 }

@@ -3,7 +3,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html><html>
     <c:forEach var="marker" items="${list}">
-            ${marker.id} ${marker.north} ${marker.east} ${marker.phone} ${marker.url};
+            ${marker.id} ${marker.north} ${marker.east} ${marker.phone};
             <br />
     </c:forEach>
 </html>

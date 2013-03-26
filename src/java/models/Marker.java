@@ -30,7 +30,7 @@ public class Marker implements Serializable {
     @Column(name="phone", nullable=false)
     private String phone;
     
-    @Column(name="image_url", nullable=false)
+    @Column(name="url", nullable=false)
     private String url;
 
     public Long getId() {

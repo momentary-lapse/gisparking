@@ -4,15 +4,23 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Отправка</title>
     </head>
     <body>
-        <div>
-        ${trace}
-        </div>
         <form action="form" method="post" enctype="multipart/form-data" >
+            Север:
+            <input type="text" name="north" />
+            <br/>
+            Восток:
+            <input type="text" name="east" />
+            <br/>
+            Телефон:
+            <input type="text" name="phone" />
+            <br/>
+            Фото:
             <input type="file" name="image" />
-            <input type="submit" value="Upload" />
+            <br/>
+            <input type="submit" value="Отправить" />
         </form>
     </body>
 </html>

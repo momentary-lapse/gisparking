@@ -37,11 +37,7 @@ public class MarkerDAO implements IMarkerDAO {
     @Transactional
     @Override
     public void deleteById(Long id) {
-        List<Marker> markers = template.findByNamedParam("from MARKERS", "id", id);
-        if (markers.isEmpty()) {
-            return;
-        }
-        template.delete(markers.get(0));
+        template.delete(getById(id));
         template.flush();
     }
     

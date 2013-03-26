@@ -37,7 +37,7 @@
                         });
                     
                         infowindows[i] = new google.maps.InfoWindow({
-                            content: '${m.phone}'
+                            content: '<img src="images/${m.id}" />'
                         });
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
@@ -56,7 +56,7 @@
                                 
                     });
                     var infowindow = new google.maps.InfoWindow({
-                        content: '<IMG ALIGN="Left" SRC="${path}"> ${marker.phone}'
+                        content: '<img src="images/${marker.id}" />'
                         
                     });
                     google.maps.event.addListener(marker, 'click', function() {
