@@ -1,9 +1,1 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html><html>
-    <c:forEach var="marker" items="${list}">
-            ${marker.id} ${marker.north} ${marker.east} ${marker.phone};
-            <br />
-    </c:forEach>
-</html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %><%@page contentType="text/html" pageEncoding="UTF-8"%><c:forEach var="marker" items="${list}">${marker.id} ${marker.north} ${marker.east} ${marker.phone} ;</c:forEach>
