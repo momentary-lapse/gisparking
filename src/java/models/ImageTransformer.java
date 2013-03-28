@@ -28,4 +28,22 @@ public class ImageTransformer {
         return image;
 
     }
+    
+    public static BufferedImage scaleByHeigth(BufferedImage original, int newHeight) {
+        
+        int w = original.getWidth();
+        int h = original.getHeight();
+        int newWidth = (int) (((double) newHeight / w) * h);
+
+        BufferedImage image = new BufferedImage(newWidth, newHeight, original.getType());
+        
+        Graphics2D g2 = image.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(original, 0, 0, newWidth, newHeight, null);
+        g2.dispose();
+        
+        return image;
+
+    }
+    
 }

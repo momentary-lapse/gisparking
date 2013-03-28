@@ -38,6 +38,7 @@ public class IndexController {
     private String imagePath = "../images/";
     
     final int imageWidth = 300;
+    final int imageHeigth = 200;
 
     @Autowired
     MarkerService markerService;
