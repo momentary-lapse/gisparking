@@ -80,9 +80,37 @@ public class IndexController {
         f.delete();
         markerService.deleteById(id);
         
+        return "redirect:/result/success";
+
+    }
+    
+    @RequestMapping(value = "/choose/{id}", method = RequestMethod.GET)
+    public String markerChoose(@PathVariable Long id, ModelMap model) {
+
+        Marker m = markerService.getById(id);
+        if (m.getEnabled() == 0) {
+            return "redirect:/result/busy";
+        }
+        m.setEnabled(0);
+        markerService.update(m);
+        
+        return "redirect:/start/{id}";
+
+    }
+    
+    
+    @RequestMapping(value = "/cancel/{id}", method = RequestMethod.GET)
+    public String markerCancel(@PathVariable Long id, ModelMap model) {
+
+        Marker m = markerService.getById(id);
+        m.setEnabled(1);
+        markerService.update(m);
+        
         return "redirect:/start";
 
     }
+    
+    
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String listGet(ModelMap model) {
@@ -91,6 +119,15 @@ public class IndexController {
         return "list";
 
     }
+    
+    @RequestMapping(value = "/geolist", method = RequestMethod.GET)
+    public String geoListGet(@RequestParam("lat") double lat, @RequestParam("lng") double lng, ModelMap model) {
+
+        model.addAttribute("list", markerService.getSortedList(lat, lng));
+        return "list";
+
+    }
+    
 
     @RequestMapping(value = "/form", method = RequestMethod.GET)
     public String getForm(ModelMap model) {
@@ -99,9 +136,9 @@ public class IndexController {
 
     @RequestMapping(value = "/form", method = RequestMethod.POST)
     public String sendData(@RequestParam("north") Double north, @RequestParam("east") Double east, @RequestParam("phone") String phone, @RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
-
+        
         if (!"image/jpg".equals(file.getContentType()) && !"image/jpeg".equals(file.getContentType())) {
-            return "redirect:/form";
+            return "redirect:/result/fail";
         }
         
         Date date = new Date();
@@ -121,7 +158,7 @@ public class IndexController {
             
         } catch (IOException e) {
             e.printStackTrace();
-            return "redirect:/form";
+            return "redirect:/result/fail";
         }
         
         Marker m = new Marker();
@@ -129,10 +166,12 @@ public class IndexController {
         m.setEast(east);
         m.setPhone(phone);
         m.setUrl(filename);
+        m.setStamp(ts);
+        m.setEnabled(1);
         
         markerService.add(m);
         
-        return "redirect:/start";
+        return "redirect:/result/success";
     }
     
     @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces="image/jpg")
@@ -145,5 +184,14 @@ public class IndexController {
         return bao.toByteArray();
         
     }
+    
+    @RequestMapping(value = "/result/{result}", method = RequestMethod.GET)
+    public String indexGetById(@PathVariable String result, ModelMap model) {
+
+        model.addAttribute("result", result);
+        return "result";
+
+    }
+    
     
 }

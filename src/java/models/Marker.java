@@ -5,6 +5,7 @@
 package models;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,6 +33,12 @@ public class Marker implements Serializable {
     
     @Column(name="url", nullable=false)
     private String url;
+    
+    @Column(name="stamp", nullable=true)
+    private Timestamp stamp;
+    
+    @Column(name="enabled", nullable=false)
+    private int enabled;
 
     public Long getId() {
         return id;
@@ -71,6 +78,22 @@ public class Marker implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Timestamp getStamp() {
+        return stamp;
+    }
+
+    public void setStamp(Timestamp stamp) {
+        this.stamp = stamp;
+    }
+
+    public int getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(int enabled) {
+        this.enabled = enabled;
     }
     
         

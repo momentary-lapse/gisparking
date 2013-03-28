@@ -5,6 +5,8 @@
 package models;
 
 import java.util.List;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -57,7 +59,9 @@ public class MarkerDAO implements IMarkerDAO {
     @Transactional
     @Override
     public List<Marker> getList() {
-        return template.find("from Marker");
+        
+        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("enabled").eq(1));
+        return template.findByCriteria(criteria);
     }
     
 }
