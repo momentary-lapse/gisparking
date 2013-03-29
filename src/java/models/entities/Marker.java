@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package models;
+package models.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -39,6 +39,9 @@ public class Marker implements Serializable {
     
     @Column(name="enabled", nullable=false)
     private int enabled;
+    
+    @Column(name="address", nullable=false)
+    private String address;
 
     public Long getId() {
         return id;
@@ -95,6 +98,15 @@ public class Marker implements Serializable {
     public void setEnabled(int enabled) {
         this.enabled = enabled;
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    
     
         
 }

@@ -2,9 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package models;
+package models.interfaces;
 
+import java.sql.Timestamp;
 import java.util.List;
+import models.entities.Marker;
 
 
 public interface IMarkerDAO {
@@ -13,5 +15,7 @@ public interface IMarkerDAO {
     public void delete(Marker marker);
     public void update(Marker marker);
     public Marker getById(Long id);
-    public List<Marker> getList();
+    public List<Marker> getEnabledList();
+    public List<Marker> getFullList();
+    public int getPhoneRequestsNumberByTime(String phone, Timestamp timestamp);
 }

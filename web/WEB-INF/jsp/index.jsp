@@ -22,15 +22,25 @@
             var bounds;
             var map;
             var markers = [];
+            var marker;
+            var content;
             var contents = [];
             var lat;
             var lng;
+            var tolat;
+            var tolng;
             var me;
+            var directionsService;
+            var directionsDisplay;
+            var image;
+            var shadow;
             
             function initialize() {
                 
                 lat = 55.1617;
                 lng = 61.401;
+                tolat = 55.1617;
+                tolng = 61.401;
                 
                 if (window.android) {
                     lat = window.android.getLatitude();
@@ -52,20 +62,13 @@
                 
                 map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
                 
-                var image = 'https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png';
-                var shadow = {
+                image = 'https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png';
+                shadow = {
                     url: 'https://maps.gstatic.com/mapfiles/ms2/micons/msmarker.shadow.png',
                     origin: new google.maps.Point(0, 0),
                     anchor: new google.maps.Point(16, 32)
                 };
-                me = new google.maps.Marker({
-                    position: new google.maps.LatLng(lat, lng),
-                    icon: image,
-                    shadow: shadow,
-                    map: map
-                });
                 
-                bounds.extend(me.position);
                 
                 var i = 0;
                 
@@ -78,7 +81,7 @@
                         
                         bounds.extend(markers[i].position);
                     
-                        contents[i] = '<img src="/GISParking/images/${m.id}" height="200" />';
+                        contents[i] = '${m.address}<br /><img src="/GISParking/images/${m.id}" /><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/delete/${m.id}">Удалить заявку</a>';
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
                                 infowindow.setContent(contents[i]);
@@ -90,29 +93,90 @@
                     
                         i++;
                 </c:forEach>
+                
+                        me = new google.maps.Marker({
+                            position: new google.maps.LatLng(lat, lng),
+                            icon: image,
+                            shadow: shadow,
+                            map: map
+                        });
+                
+                        bounds.extend(me.position);
+                
             </c:if>
                 
             
                 
             <c:if test="${not empty marker}">
-                    var marker  = new google.maps.Marker({
-                        position: new google.maps.LatLng(${marker.north}, ${marker.east}),
-                        map: map
-                                
-                    });
-                    var content = '<img src="/GISParking/images/${marker.id}" height="200" />';
-                    infowindow.setContent(content);
-                    google.maps.event.addListener(marker, 'click', function() {
-                        infowindow.open(map, marker)
-                    });
                     
-                    bounds.extend(marker.position);
+                    tolat = ${marker.north};
+                    tolng = ${marker.east};
+                    content = '${marker.address}<br /><img src="/GISParking/images/${marker.id}" /><br /><a href="/GISParking/cancel/${marker.id}">Отменить заявку</a><br /><a href="/GISParking/delete/${marker.id}">Удалить заявку</a>';
+                    infowindow.setContent(content);
+                    
+                    bounds.extend(new google.maps.LatLng(lat, lng));
+                    bounds.extend(new google.maps.LatLng(tolat, tolng));   
+                    
+                    showDirections();
+                    
+                    
 
             </c:if>
                 
                     map.fitBounds(bounds);
                 
                 }
+                
+                function showDirections() {
+                    
+                    var a = new google.maps.LatLng(lat, lng);
+                    var b = new google.maps.LatLng(tolat, tolng);
+                    
+                    var request = {
+                        origin: a,
+                        destination: b,
+                        travelMode: google.maps.TravelMode.DRIVING
+                    };
+                    
+                    directionsDisplay = new google.maps.DirectionsRenderer({
+                        map: map,
+                        preserveViewport: true,
+                        draggable: false,
+                        suppressMarkers: true
+                    });
+                    
+                    directionsService = new google.maps.DirectionsService();
+                    directionsService.route(request, drawRoute);
+                    
+                    
+                }
+                
+                
+                function drawRoute(response, status) {
+                        
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        
+                        var leg = response.routes[0].legs[0];
+                        me = new google.maps.Marker({
+                            position: leg.start_location,
+                            icon: image,
+                            shadow: shadow,
+                            map: map
+                        });
+                        marker = new google.maps.Marker({
+                            position: leg.end_location,
+                            map: map
+                        });
+                            
+                        google.maps.event.addListener(marker, 'click', function() {
+                            infowindow.open(map, marker)
+                        });
+                        
+                        directionsDisplay.setDirections(response);
+                    }
+                        
+                }
+                
         </script>
     </head>
     <body onload="initialize()">

@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package models;
+package models.services;
 
+import java.sql.Timestamp;
+import models.entities.Marker;
+import models.interfaces.IMarkerDAO;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -62,16 +65,26 @@ public class MarkerService {
     }
     
     
-    public List<Marker> getList() {
-        return markerDAO.getList();
+    public List<Marker> getEnabledList() {
+        return markerDAO.getEnabledList();
+    }
+    
+    public List<Marker> getFullList() {
+        return markerDAO.getFullList();
     }
     
     public List<Marker> getSortedList(double lat, double lng) {
         
         GeoComparator comp = new GeoComparator(lat, lng);
-        List<Marker> list = getList();
+        List<Marker> list = markerDAO.getEnabledList();
         Collections.sort(list, comp);
         return list;
+        
+    }
+    
+    public int getPhoneRequestsNumberByTime(String phone, Timestamp timestamp) {
+        
+        return markerDAO.getPhoneRequestsNumberByTime(phone, timestamp);
         
     }
     

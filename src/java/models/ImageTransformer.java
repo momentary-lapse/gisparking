@@ -33,7 +33,7 @@ public class ImageTransformer {
         
         int w = original.getWidth();
         int h = original.getHeight();
-        int newWidth = (int) (((double) newHeight / w) * h);
+        int newWidth = (int) (((double) newHeight / h) * w);
 
         BufferedImage image = new BufferedImage(newWidth, newHeight, original.getType());
         

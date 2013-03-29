@@ -2,18 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package models;
+package models.dao;
 
 import java.util.List;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Property;
+import models.entities.Phone;
+import models.interfaces.IPhoneDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class MarkerDAO implements IMarkerDAO {
+public class PhoneDAO implements IPhoneDAO {
 
     HibernateTemplate template;
 
@@ -24,15 +24,15 @@ public class MarkerDAO implements IMarkerDAO {
    
     @Transactional
     @Override
-    public void add(Marker marker) {
-        template.save(marker);
+    public void add(Phone phone) {
+        template.save(phone);
         template.flush();
     }
     
     @Transactional
     @Override
-    public void delete(Marker marker) {
-        template.delete(marker);
+    public void delete(Phone phone) {
+        template.delete(phone);
         template.flush();
     }
     
@@ -45,23 +45,22 @@ public class MarkerDAO implements IMarkerDAO {
     
     @Transactional
     @Override
-    public void update(Marker marker) {
-        template.saveOrUpdate(marker);
+    public void update(Phone phone) {
+        template.saveOrUpdate(phone);
         template.flush();
     }
     
     @Transactional
     @Override
-    public Marker getById(Long id) {
-        return (Marker) template.get(Marker.class, id);
+    public Phone getById(Long id) {
+        return (Phone) template.get(Phone.class, id);
     }
     
     @Transactional
     @Override
-    public List<Marker> getList() {
+    public List<Phone> getList() {
         
-        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("enabled").eq(1));
-        return template.findByCriteria(criteria);
+        return template.find("from Phone");
     }
     
 }

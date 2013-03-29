@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.MalformedURLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.logging.Level;
@@ -19,9 +20,15 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import models.GeoJSONParser;
 import models.ImageTransformer;
-import models.Marker;
-import models.MarkerService;
+import models.UrlReader;
+import models.entities.Marker;
+import models.services.MarkerService;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -59,7 +66,7 @@ public class IndexController {
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public String indexGet(ModelMap model) {
 
-        model.addAttribute("markers", markerService.getList());
+        model.addAttribute("markers", markerService.getEnabledList());
         return "index";
 
     }
@@ -115,7 +122,7 @@ public class IndexController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String listGet(ModelMap model) {
 
-        model.addAttribute("list", markerService.getList());
+        model.addAttribute("list", markerService.getEnabledList());
         return "list";
 
     }
@@ -137,8 +144,41 @@ public class IndexController {
     @RequestMapping(value = "/form", method = RequestMethod.POST)
     public String sendData(@RequestParam("north") Double north, @RequestParam("east") Double east, @RequestParam("phone") String phone, @RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
         
-        if (!"image/jpg".equals(file.getContentType()) && !"image/jpeg".equals(file.getContentType())) {
+        if (!"image/jpg".equals(file.getContentType()) && !"image/jpeg".equals(file.getContentType()) && !"image/png".equals(file.getContentType())) {
             return "redirect:/result/fail";
+        }
+        
+        UrlReader urlReader = new UrlReader("http://geocode-maps.yandex.ru/1.x/?format=json&geocode=" + east.toString() + "," + north.toString() + "&results=1");
+        String jsonString = "";
+        try {
+            jsonString = urlReader.read();
+        } catch (Exception ex) {
+            Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
+            return "redirect:/result/unknown";
+        }
+        
+        GeoJSONParser geoParser = new GeoJSONParser(jsonString);
+        
+        String address = null;
+        String country = null;
+        String city = null;
+        
+        
+        try {
+            
+            geoParser.parse();
+            
+        } catch (Exception ex) {
+            Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
+            return "redirect:/result/unknown";
+        }
+        
+        address = geoParser.getAddress();
+        country = geoParser.getCountry();
+        city = geoParser.getCity();
+        
+        if (!"Россия".equals(country) && !"Челябинск".equals(city)) {
+            return "redirect:/result/" + country + "," + city;
         }
         
         Date date = new Date();
@@ -152,12 +192,12 @@ public class IndexController {
         try {
             imageFile.getParentFile().createNewFile();
             BufferedImage image = ImageIO.read(file.getInputStream());
-            image = ImageTransformer.scaleByWidth(image, imageWidth);
+            image = ImageTransformer.scaleByHeigth(image, imageHeigth);
             imageFile.createNewFile();
             ImageIO.write(image, "jpg", imageFile);
             
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
             return "redirect:/result/fail";
         }
         
@@ -168,6 +208,7 @@ public class IndexController {
         m.setUrl(filename);
         m.setStamp(ts);
         m.setEnabled(1);
+        m.setAddress(address);
         
         markerService.add(m);
         
