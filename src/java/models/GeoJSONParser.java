@@ -11,18 +11,16 @@ import org.json.simple.parser.ParseException;
 
 public class GeoJSONParser {
 
-    String jsonString;
     String address = null;
     String country = null;
     String city = null;
+    JSONParser parser;
 
-    public GeoJSONParser(String jsonString) {
-        this.jsonString = jsonString;
+    public GeoJSONParser() {
+        parser = new JSONParser();
     }
 
-    public void parse() throws ParseException, NullPointerException {
-
-        JSONParser parser = new JSONParser();
+    public void parse(String jsonString) throws ParseException, NullPointerException {
 
         JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
         jsonObject = (JSONObject) jsonObject.get("response");
@@ -52,14 +50,6 @@ public class GeoJSONParser {
 
     public String getCountry() {
         return country;
-    }
-
-    public String getJsonString() {
-        return jsonString;
-    }
-
-    public void setJsonString(String jsonString) {
-        this.jsonString = jsonString;
     }
     
 }

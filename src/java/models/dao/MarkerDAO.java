@@ -86,4 +86,17 @@ public class MarkerDAO implements IMarkerDAO {
         
     }
     
+    @Transactional
+    @Override
+    public Marker getLastQuery(String phone) {
+        
+        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("phone").eq(phone));
+        List<Marker> list =  template.findByCriteria(criteria);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(list.size() - 1);
+        
+    }
+    
 }

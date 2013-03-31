@@ -16,6 +16,15 @@
     <bean name="markerService" class="models.services.MarkerService">
         <property name="markerDAO" ref="markerDAO" />
     </bean>
+    
+    <bean name="phoneDAO" class="models.dao.PhoneDAO">
+        <property name="template" ref="hibernateTemplate" />
+    </bean>
+    
+    <bean name="phoneService" class="models.services.PhoneService">
+        <property name="phoneDAO" ref="phoneDAO" />
+    </bean>
+    
 
 
 </beans>

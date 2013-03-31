@@ -88,4 +88,10 @@ public class MarkerService {
         
     }
     
+    public Marker getLastQuery(String phone) {
+        
+        return markerDAO.getLastQuery(phone);
+        
+    }
+    
 }

@@ -25,6 +25,7 @@
         <property name="annotatedClasses">
             <list>
                 <value>models.entities.Marker</value>
+                <value>models.entities.Phone</value>
             </list>
         </property>
         <property name="hibernateProperties">

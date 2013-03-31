@@ -5,8 +5,11 @@
 package models.dao;
 
 import java.util.List;
+import models.entities.Marker;
 import models.entities.Phone;
 import models.interfaces.IPhoneDAO;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,6 +24,8 @@ public class PhoneDAO implements IPhoneDAO {
     public void setTemplate(HibernateTemplate template) {
         this.template = template;
     }
+
+    
    
     @Transactional
     @Override
@@ -54,6 +59,20 @@ public class PhoneDAO implements IPhoneDAO {
     @Override
     public Phone getById(Long id) {
         return (Phone) template.get(Phone.class, id);
+    }
+    
+    @Transactional
+    @Override
+    public Phone getByPhone(String phone) {
+        
+        DetachedCriteria criteria = DetachedCriteria.forClass(Phone.class).add(Property.forName("phone").eq(phone));
+        List<Phone> list = template.findByCriteria(criteria);
+        
+        if (list.isEmpty()) {
+            return null;
+        }
+        
+        return (Phone) list.get(0);
     }
     
     @Transactional

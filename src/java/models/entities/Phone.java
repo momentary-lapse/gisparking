@@ -26,6 +26,32 @@ public class Phone implements Serializable {
     
     @Column(name="priority", nullable=false)
     private int priority;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+    
+    
     
         
 }

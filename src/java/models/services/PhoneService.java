@@ -18,7 +18,7 @@ public class PhoneService {
     private IPhoneDAO phoneDAO;
 
     @Autowired
-    public void setMarkerDAO(IPhoneDAO phoneDAO) {
+    public void setPhoneDAO(IPhoneDAO phoneDAO) {
         this.phoneDAO = phoneDAO;
     }
     
@@ -42,6 +42,9 @@ public class PhoneService {
         return phoneDAO.getById(id);
     }
     
+    public Phone getByPhone(String phone) {
+        return phoneDAO.getByPhone(phone);
+    }
     
     public List<Phone> getList() {
         return phoneDAO.getList();

@@ -10,6 +10,8 @@
             html {height: 100%}
             body {height: 100%; margin: 0%; padding: 0%}
             #map_canvas {height: 100%}
+            #imdiv {height: 200px}
+            #content {max-height: 300px; max-width: 300px}
         </style>
         <script type="text/javascript" 
                 src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDbMnY6EFXaDYP_eBBwLFQgZuDS13bTdNc&sensor=true">
@@ -56,7 +58,7 @@
                 };
                 
                 infowindow = new google.maps.InfoWindow({
-                    content: ''
+                    disableAutoPan: false
                 });
                 
                 
@@ -81,11 +83,11 @@
                         
                         bounds.extend(markers[i].position);
                     
-                        contents[i] = '${m.address}<br /><img src="/GISParking/images/${m.id}" /><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/delete/${m.id}">Удалить заявку</a>';
+                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Пожаловаться и удалить</a></div>';
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
                                 infowindow.setContent(contents[i]);
-                                map.setCenter(markers[i].position);
+                                map.panTo(markers[i].position);
                                 map.setZoom(15);
                                 infowindow.open(map, markers[i]);
                             }
@@ -102,6 +104,8 @@
                         });
                 
                         bounds.extend(me.position);
+                        
+                        map.fitBounds(bounds);
                 
             </c:if>
                 
@@ -111,11 +115,8 @@
                     
                     tolat = ${marker.north};
                     tolng = ${marker.east};
-                    content = '${marker.address}<br /><img src="/GISParking/images/${marker.id}" /><br /><a href="/GISParking/cancel/${marker.id}">Отменить заявку</a><br /><a href="/GISParking/delete/${marker.id}">Удалить заявку</a>';
-                    infowindow.setContent(content);
-                    
-                    bounds.extend(new google.maps.LatLng(lat, lng));
-                    bounds.extend(new google.maps.LatLng(tolat, tolng));   
+                    content = '<div id="content">${marker.address}<br /><div id="imdiv"><img src="/GISParking/images/${marker.id}" /></div><br /><a href="/GISParking/cancel/${marker.id}">Отменить заявку</a><br /><a href="/GISParking/delete/${marker.id}">Удалить заявку</a></div>';
+                    infowindow.setContent(content);  
                     
                     showDirections();
                     
@@ -123,7 +124,7 @@
 
             </c:if>
                 
-                    map.fitBounds(bounds);
+                    
                 
                 }
                 
@@ -144,6 +145,7 @@
                         draggable: false,
                         suppressMarkers: true
                     });
+  
                     
                     directionsService = new google.maps.DirectionsService();
                     directionsService.route(request, drawRoute);
@@ -157,6 +159,10 @@
                     if (status == google.maps.DirectionsStatus.OK) {
                         
                         var leg = response.routes[0].legs[0];
+                        
+                        map.fitBounds(response.routes[0].bounds);
+                        
+                        
                         me = new google.maps.Marker({
                             position: leg.start_location,
                             icon: image,
@@ -169,7 +175,9 @@
                         });
                             
                         google.maps.event.addListener(marker, 'click', function() {
-                            infowindow.open(map, marker)
+                            map.panTo(marker.position);
+                            map.setZoom(15);
+                            infowindow.open(map, marker);
                         });
                         
                         directionsDisplay.setDirections(response);

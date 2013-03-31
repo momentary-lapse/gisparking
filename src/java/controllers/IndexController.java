@@ -4,31 +4,24 @@
  */
 package controllers;
 
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.net.MalformedURLException;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import models.GeoJSONParser;
+import models.Geocoder;
 import models.ImageTransformer;
-import models.UrlReader;
 import models.entities.Marker;
+import models.entities.Phone;
 import models.services.MarkerService;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import models.services.PhoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,14 +34,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class IndexController {
-    
+
     private String imagePath = "../images/";
-    
     final int imageWidth = 300;
     final int imageHeigth = 200;
-
+    final double chelLat = 55.17;
+    final double chelLng = 61.4;
+    final int maxBadQueries = 5;
+    final int maxQueriesPerDay = 25;
+    final int daysOfBan = 30;
     @Autowired
     MarkerService markerService;
+    @Autowired
+    PhoneService phoneService;
 
     @RequestMapping(value = "/")
     public String go() {
@@ -65,6 +63,7 @@ public class IndexController {
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public String indexGet(ModelMap model) {
+
 
         model.addAttribute("markers", markerService.getEnabledList());
         return "index";
@@ -86,11 +85,11 @@ public class IndexController {
         File f = new File(imagePath + m.getUrl());
         f.delete();
         markerService.deleteById(id);
-        
+
         return "redirect:/result/success";
 
     }
-    
+
     @RequestMapping(value = "/choose/{id}", method = RequestMethod.GET)
     public String markerChoose(@PathVariable Long id, ModelMap model) {
 
@@ -100,24 +99,46 @@ public class IndexController {
         }
         m.setEnabled(0);
         markerService.update(m);
-        
+
         return "redirect:/start/{id}";
 
     }
-    
-    
+
+    @RequestMapping(value = "/complain/{id}", method = RequestMethod.GET)
+    public String complainPhone(@PathVariable Long id, ModelMap model) {
+
+        Marker m = markerService.getById(id);
+        Phone p = phoneService.getByPhone(m.getPhone());
+
+        if (p == null) {
+
+            p = new Phone();
+            p.setPhone(m.getPhone());
+            p.setPriority(2);
+            phoneService.add(p);
+
+            return "redirect:/delete/" + id.toString();
+
+        }
+
+        p.setPriority(p.getPriority() + 1);
+
+        phoneService.update(p);
+
+        return "redirect:/delete/" + id.toString();
+
+    }
+
     @RequestMapping(value = "/cancel/{id}", method = RequestMethod.GET)
     public String markerCancel(@PathVariable Long id, ModelMap model) {
 
         Marker m = markerService.getById(id);
         m.setEnabled(1);
         markerService.update(m);
-        
+
         return "redirect:/start";
 
     }
-    
-    
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String listGet(ModelMap model) {
@@ -126,7 +147,7 @@ public class IndexController {
         return "list";
 
     }
-    
+
     @RequestMapping(value = "/geolist", method = RequestMethod.GET)
     public String geoListGet(@RequestParam("lat") double lat, @RequestParam("lng") double lng, ModelMap model) {
 
@@ -134,7 +155,6 @@ public class IndexController {
         return "list";
 
     }
-    
 
     @RequestMapping(value = "/form", method = RequestMethod.GET)
     public String getForm(ModelMap model) {
@@ -143,44 +163,57 @@ public class IndexController {
 
     @RequestMapping(value = "/form", method = RequestMethod.POST)
     public String sendData(@RequestParam("north") Double north, @RequestParam("east") Double east, @RequestParam("phone") String phone, @RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
-        
+
         if (!"image/jpg".equals(file.getContentType()) && !"image/jpeg".equals(file.getContentType()) && !"image/png".equals(file.getContentType())) {
             return "redirect:/result/fail";
         }
-        
-        UrlReader urlReader = new UrlReader("http://geocode-maps.yandex.ru/1.x/?format=json&geocode=" + east.toString() + "," + north.toString() + "&results=1");
-        String jsonString = "";
+
+        Phone p = phoneService.getByPhone(phone);
+
+        if (p == null) {
+
+            p = new Phone();
+            p.setPhone(phone);
+            p.setPriority(1);
+            phoneService.add(p);
+
+        } else {
+
+            if (p.getPriority() >= maxBadQueries) {
+
+                Marker m = markerService.getLastQuery(phone);
+                Timestamp ts = new Timestamp(Calendar.getInstance().getTimeInMillis() - 1000 * 60 * 60 * 24 * daysOfBan);
+
+                if (m == null || m.getStamp().before(ts)) {
+                    p.setPriority(1);
+                    phoneService.update(p);
+                } else {
+                    return "redirect:/result/banned";
+                }
+            }
+            Timestamp ts = new Timestamp(Calendar.getInstance().getTimeInMillis() - 1000 * 60 * 60 * 24);
+            int queries = markerService.getPhoneRequestsNumberByTime(p.getPhone(), ts);
+            if (queries > maxQueriesPerDay) {
+                return "redirect:/result/overquery";
+            }
+
+        }
+
+        Geocoder geocoder = new Geocoder();
+
         try {
-            jsonString = urlReader.read();
+
+            geocoder.geocode(north, east);
+
         } catch (Exception ex) {
             Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
             return "redirect:/result/unknown";
         }
-        
-        GeoJSONParser geoParser = new GeoJSONParser(jsonString);
-        
-        String address = null;
-        String country = null;
-        String city = null;
-        
-        
-        try {
-            
-            geoParser.parse();
-            
-        } catch (Exception ex) {
-            Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
-            return "redirect:/result/unknown";
+
+        if (!"Россия".equals(geocoder.getCountry()) && !"Челябинск".equals(geocoder.getCity())) {
+            return "redirect:/result/out";
         }
-        
-        address = geoParser.getAddress();
-        country = geoParser.getCountry();
-        city = geoParser.getCity();
-        
-        if (!"Россия".equals(country) && !"Челябинск".equals(city)) {
-            return "redirect:/result/" + country + "," + city;
-        }
-        
+
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
         String filename = ts.toString();
@@ -188,19 +221,19 @@ public class IndexController {
         String path = imagePath + filename;
 
         File imageFile = new File(path);
-        
+
         try {
             imageFile.getParentFile().createNewFile();
             BufferedImage image = ImageIO.read(file.getInputStream());
             image = ImageTransformer.scaleByHeigth(image, imageHeigth);
             imageFile.createNewFile();
             ImageIO.write(image, "jpg", imageFile);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
             return "redirect:/result/fail";
         }
-        
+
         Marker m = new Marker();
         m.setNorth(north);
         m.setEast(east);
@@ -208,24 +241,25 @@ public class IndexController {
         m.setUrl(filename);
         m.setStamp(ts);
         m.setEnabled(1);
-        m.setAddress(address);
-        
+        m.setAddress(geocoder.getAddress());
+
         markerService.add(m);
-        
+
         return "redirect:/result/success";
     }
-    
-    @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces="image/jpg")
-    public @ResponseBody byte[] getImage(@PathVariable Long id, HttpServletResponse response) throws IOException {
-       
+
+    @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = "image/jpg")
+    public @ResponseBody
+    byte[] getImage(@PathVariable Long id, HttpServletResponse response) throws IOException {
+
         Marker m = markerService.getById(id);
         BufferedImage image = ImageIO.read(new File(imagePath + m.getUrl()));
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", bao);
         return bao.toByteArray();
-        
+
     }
-    
+
     @RequestMapping(value = "/result/{result}", method = RequestMethod.GET)
     public String indexGetById(@PathVariable String result, ModelMap model) {
 
@@ -233,6 +267,4 @@ public class IndexController {
         return "result";
 
     }
-    
-    
 }

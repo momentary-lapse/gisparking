@@ -14,5 +14,6 @@ public interface IPhoneDAO {
     public void delete(Phone phone);
     public void update(Phone phone);
     public Phone getById(Long id);
+    public Phone getByPhone(String phone);
     public List<Phone> getList();
 }
