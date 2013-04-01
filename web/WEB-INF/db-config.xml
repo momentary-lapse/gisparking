@@ -26,6 +26,7 @@
             <list>
                 <value>models.entities.Marker</value>
                 <value>models.entities.Phone</value>
+                <value>models.entities.Ban</value>
             </list>
         </property>
         <property name="hibernateProperties">

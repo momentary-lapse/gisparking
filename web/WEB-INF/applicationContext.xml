@@ -25,6 +25,14 @@
         <property name="phoneDAO" ref="phoneDAO" />
     </bean>
     
+    <bean name="banDAO" class="models.dao.BanDAO">
+        <property name="template" ref="hibernateTemplate" />
+    </bean>
+    
+    <bean name="banService" class="models.services.BanService">
+        <property name="banDAO" ref="banDAO" />
+    </bean>
+    
 
 
 </beans>

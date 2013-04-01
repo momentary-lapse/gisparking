@@ -18,8 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import models.Geocoder;
 import models.ImageTransformer;
+import models.entities.Ban;
 import models.entities.Marker;
 import models.entities.Phone;
+import models.services.BanService;
 import models.services.MarkerService;
 import models.services.PhoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +44,17 @@ public class IndexController {
     final double chelLng = 61.4;
     final int maxBadQueries = 5;
     final int maxQueriesPerDay = 25;
+    final int maxBans = 5;
     final int daysOfBan = 30;
+    final int timeToBan = 1000 * 60 * 60 * 24 * daysOfBan;
+    //final int timeToBan = 1000 * 60;
+    
     @Autowired
     MarkerService markerService;
     @Autowired
     PhoneService phoneService;
+    @Autowired
+    BanService banService;
 
     @RequestMapping(value = "/")
     public String go() {
@@ -124,6 +132,23 @@ public class IndexController {
         p.setPriority(p.getPriority() + 1);
 
         phoneService.update(p);
+        
+        if (p.getPriority() >= maxBadQueries) {
+            Ban b = banService.getLastByPhone(p.getPhone());
+            if (b == null) {
+                b = new Ban();
+                b.setPhone(p.getPhone());
+                b.setStamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+                b.setNumber(1);
+                banService.add(b);
+            }
+            if (b.getStamp().before(new Timestamp(Calendar.getInstance().getTimeInMillis() - timeToBan))) {
+                b.setStamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+                b.setNumber(b.getNumber() + 1);
+                banService.update(b);
+            }
+            
+        }
 
         return "redirect:/delete/" + id.toString();
 
@@ -181,10 +206,10 @@ public class IndexController {
 
             if (p.getPriority() >= maxBadQueries) {
 
-                Marker m = markerService.getLastQuery(phone);
-                Timestamp ts = new Timestamp(Calendar.getInstance().getTimeInMillis() - 1000 * 60 * 60 * 24 * daysOfBan);
+                Ban b = banService.getLastByPhone(phone);
+                Timestamp ts = new Timestamp(Calendar.getInstance().getTimeInMillis() - timeToBan);
 
-                if (m == null || m.getStamp().before(ts)) {
+                if (b == null || (b.getStamp().before(ts) && b.getNumber() < maxBans)) {
                     p.setPriority(1);
                     phoneService.update(p);
                 } else {

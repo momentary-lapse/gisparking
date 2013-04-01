@@ -5,14 +5,14 @@
 package models.services;
 
 import java.sql.Timestamp;
-import models.entities.Marker;
-import models.interfaces.IMarkerDAO;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import org.hibernate.cfg.CollectionSecondPass;
+import models.entities.Marker;
+import models.interfaces.IMarkerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class MarkerService {
