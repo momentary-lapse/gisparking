@@ -37,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class IndexController {
 
-    private String imagePath = "../images/";
+    String imagePath = "../images/";
     final int imageWidth = 300;
     final int imageHeigth = 200;
     final double chelLat = 55.17;
@@ -47,7 +47,6 @@ public class IndexController {
     final int maxBans = 5;
     final int daysOfBan = 30;
     final int timeToBan = 1000 * 60 * 60 * 24 * daysOfBan;
-    //final int timeToBan = 1000 * 60;
     
     @Autowired
     MarkerService markerService;

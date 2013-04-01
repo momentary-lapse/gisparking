@@ -83,7 +83,7 @@
                         
                         bounds.extend(markers[i].position);
                     
-                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Пожаловаться и удалить</a></div>';
+                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Удалить и пожаловаться</a></div>';
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
                                 infowindow.setContent(contents[i]);
