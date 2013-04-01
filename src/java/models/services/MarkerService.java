@@ -28,8 +28,8 @@ public class MarkerService {
         
         @Override
         public int compare(Marker a, Marker b) {
-            double dista = Math.abs(lat - a.getNorth()) + Math.abs(lng - a.getEast());
-            double distb = Math.abs(lat - b.getNorth()) + Math.abs(lng - b.getEast());
+            double dista = Math.abs(lat - a.getLat()) + Math.abs(lng - a.getLng());
+            double distb = Math.abs(lat - b.getLat()) + Math.abs(lng - b.getLng());
             return Double.compare(dista, distb);
         }
         

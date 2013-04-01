@@ -8,11 +8,11 @@
     </head>
     <body>
         <form action="form" method="post" enctype="multipart/form-data" >
-            Север:
-            <input type="text" name="north" />
+            Широта:
+            <input type="text" name="lat" />
             <br/>
-            Восток:
-            <input type="text" name="east" />
+            Долгота:
+            <input type="text" name="lng" />
             <br/>
             Телефон:
             <input type="text" name="phone" />

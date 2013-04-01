@@ -11,7 +11,7 @@
             body {height: 100%; margin: 0%; padding: 0%}
             #map_canvas {height: 100%}
             #imdiv {height: 200px}
-            #content {max-height: 300px; max-width: 300px}
+            #content {max-height: 350px; max-width: 300px}
         </style>
         <script type="text/javascript" 
                 src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDbMnY6EFXaDYP_eBBwLFQgZuDS13bTdNc&sensor=true">
@@ -77,13 +77,13 @@
             <c:if test="${empty marker}">
                 <c:forEach var="m" items="${markers}">
                         markers[i] = new google.maps.Marker({
-                            position: new google.maps.LatLng(${m.north}, ${m.east}),
+                            position: new google.maps.LatLng(${m.lat}, ${m.lng}),
                             map: map
                         });
                         
                         bounds.extend(markers[i].position);
                     
-                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Удалить и пожаловаться</a></div>';
+                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Удалить и пожаловаться</a><br /><a href="#" onclick="interface.getMarker(${m.id})">Подробнее...</a></div>';
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
                                 infowindow.setContent(contents[i]);
@@ -113,8 +113,8 @@
                 
             <c:if test="${not empty marker}">
                     
-                    tolat = ${marker.north};
-                    tolng = ${marker.east};
+                    tolat = ${marker.lat};
+                    tolng = ${marker.lng};
                     content = '<div id="content">${marker.address}<br /><div id="imdiv"><img src="/GISParking/images/${marker.id}" /></div><br /><a href="/GISParking/cancel/${marker.id}">Отменить заявку</a><br /><a href="/GISParking/delete/${marker.id}">Удалить заявку</a></div>';
                     infowindow.setContent(content);  
                     

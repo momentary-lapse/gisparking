@@ -23,10 +23,10 @@ public class Marker implements Serializable {
     private Long id;
     
     @Column(name="north", nullable=false)
-    private double north;
+    private double lat;
     
     @Column(name="east", nullable=false)
-    private double east;
+    private double lng;
     
     @Column(name="phone", nullable=false)
     private String phone;
@@ -51,20 +51,20 @@ public class Marker implements Serializable {
         this.id = id;
     }
 
-    public double getEast() {
-        return east;
+    public double getLng() {
+        return lng;
     }
 
-    public void setEast(double east) {
-        this.east = east;
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
-    public double getNorth() {
-        return north;
+    public double getLat() {
+        return lat;
     }
 
-    public void setNorth(double north) {
-        this.north = north;
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
     public String getPhone() {

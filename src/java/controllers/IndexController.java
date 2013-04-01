@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -24,6 +25,8 @@ import models.entities.Phone;
 import models.services.BanService;
 import models.services.MarkerService;
 import models.services.PhoneService;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -47,7 +50,6 @@ public class IndexController {
     final int maxBans = 5;
     final int daysOfBan = 30;
     final int timeToBan = 1000 * 60 * 60 * 24 * daysOfBan;
-    
     @Autowired
     MarkerService markerService;
     @Autowired
@@ -80,7 +82,16 @@ public class IndexController {
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String markerGetById(@PathVariable Long id, ModelMap model) {
 
-        model.addAttribute("marker", markerService.getById(id));
+        Marker m = markerService.getById(id);
+        
+        JSONObject marker = new JSONObject();
+        marker.put("id", m.getId());
+        marker.put("lat", m.getLat());
+        marker.put("lng", m.getLng());
+        marker.put("address", m.getAddress());
+        marker.put("phone", m.getPhone());
+
+        model.addAttribute("marker", marker.toJSONString());
         return "marker";
 
     }
@@ -131,7 +142,7 @@ public class IndexController {
         p.setPriority(p.getPriority() + 1);
 
         phoneService.update(p);
-        
+
         if (p.getPriority() >= maxBadQueries) {
             Ban b = banService.getLastByPhone(p.getPhone());
             if (b == null) {
@@ -146,7 +157,7 @@ public class IndexController {
                 b.setNumber(b.getNumber() + 1);
                 banService.update(b);
             }
-            
+
         }
 
         return "redirect:/delete/" + id.toString();
@@ -167,7 +178,23 @@ public class IndexController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String listGet(ModelMap model) {
 
-        model.addAttribute("list", markerService.getEnabledList());
+        List<Marker> list = markerService.getEnabledList();
+
+        JSONArray markers = new JSONArray();
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject marker = new JSONObject();
+            marker.put("id", list.get(i).getId());
+            marker.put("lat", list.get(i).getLat());
+            marker.put("lng", list.get(i).getLng());
+            marker.put("address", list.get(i).getAddress());
+            marker.put("phone", list.get(i).getPhone());
+            markers.add(marker);
+        }
+        JSONObject result = new JSONObject();
+        result.put("markers", markers);
+
+        model.addAttribute("list", result.toJSONString());
+
         return "list";
 
     }
@@ -175,7 +202,23 @@ public class IndexController {
     @RequestMapping(value = "/geolist", method = RequestMethod.GET)
     public String geoListGet(@RequestParam("lat") double lat, @RequestParam("lng") double lng, ModelMap model) {
 
-        model.addAttribute("list", markerService.getSortedList(lat, lng));
+        List<Marker> list = markerService.getSortedList(lat, lng);
+
+        JSONArray markers = new JSONArray();
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject marker = new JSONObject();
+            marker.put("id", list.get(i).getId());
+            marker.put("lat", list.get(i).getLat());
+            marker.put("lng", list.get(i).getLng());
+            marker.put("address", list.get(i).getAddress());
+            marker.put("phone", list.get(i).getPhone());
+            markers.add(marker);
+        }
+        JSONObject result = new JSONObject();
+        result.put("markers", markers);
+
+        model.addAttribute("list", result.toJSONString());
+
         return "list";
 
     }
@@ -186,7 +229,7 @@ public class IndexController {
     }
 
     @RequestMapping(value = "/form", method = RequestMethod.POST)
-    public String sendData(@RequestParam("north") Double north, @RequestParam("east") Double east, @RequestParam("phone") String phone, @RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
+    public String sendData(@RequestParam("lat") Double lat, @RequestParam("lng") Double lng, @RequestParam("phone") String phone, @RequestParam("image") MultipartFile file, HttpServletRequest request, ModelMap model) {
 
         if (!"image/jpg".equals(file.getContentType()) && !"image/jpeg".equals(file.getContentType()) && !"image/png".equals(file.getContentType())) {
             return "redirect:/result/fail";
@@ -227,7 +270,7 @@ public class IndexController {
 
         try {
 
-            geocoder.geocode(north, east);
+            geocoder.geocode(lat, lng);
 
         } catch (Exception ex) {
             Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
@@ -259,8 +302,8 @@ public class IndexController {
         }
 
         Marker m = new Marker();
-        m.setNorth(north);
-        m.setEast(east);
+        m.setLat(lat);
+        m.setLng(lng);
         m.setPhone(phone);
         m.setUrl(filename);
         m.setStamp(ts);
