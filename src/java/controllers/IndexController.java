@@ -28,6 +28,7 @@ import models.services.PhoneService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,9 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class IndexController {
 
-    String imagePath = "../images/";
-    final int imageWidth = 300;
-    final int imageHeigth = 200;
+    
     final double chelLat = 55.17;
     final double chelLng = 61.4;
     final int maxBadQueries = 5;
@@ -63,18 +62,32 @@ public class IndexController {
     }
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
-    public String indexGetById(@PathVariable Long id, HttpServletRequest request, ModelMap model) {
+    public String indexGetById(@RequestParam(value="lat", required=false) Double lat, @RequestParam(value="lng", required=false) Double lng, @PathVariable Long id, HttpServletRequest request, ModelMap model) {
 
+        if (lat == null || lng == null) {
+            lat = chelLat;
+            lng = chelLng;
+        }
         model.addAttribute("marker", markerService.getById(id));
+        model.addAttribute("lat", lat.doubleValue());
+        model.addAttribute("lng", lng.doubleValue());
+        
         return "index";
 
     }
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
-    public String indexGet(ModelMap model) {
+    public String indexGet(@RequestParam(value="lat", required=false) Double lat, @RequestParam(value="lng", required=false) Double lng, ModelMap model) {
 
 
+        if (lat == null || lng == null) {
+            lat = chelLat;
+            lng = chelLng;
+        }
         model.addAttribute("markers", markerService.getEnabledList());
+        model.addAttribute("lat", lat.doubleValue());
+        model.addAttribute("lng", lng.doubleValue());
+        
         return "index";
 
     }
@@ -99,9 +112,6 @@ public class IndexController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String markerDeleteById(@PathVariable Long id, ModelMap model) {
 
-        Marker m = markerService.getById(id);
-        File f = new File(imagePath + m.getUrl());
-        f.delete();
         markerService.deleteById(id);
 
         return "redirect:/result/success";
@@ -285,17 +295,8 @@ public class IndexController {
         Timestamp ts = new Timestamp(date.getTime());
         String filename = ts.toString();
         filename = filename.replaceAll("\\s", "_");
-        String path = imagePath + filename;
-
-        File imageFile = new File(path);
-
         try {
-            imageFile.getParentFile().createNewFile();
-            BufferedImage image = ImageIO.read(file.getInputStream());
-            image = ImageTransformer.scaleByHeigth(image, imageHeigth);
-            imageFile.createNewFile();
-            ImageIO.write(image, "jpg", imageFile);
-
+            markerService.writeImage(file, filename);
         } catch (IOException ex) {
             Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
             return "redirect:/result/fail";
@@ -317,13 +318,13 @@ public class IndexController {
 
     @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = "image/jpg")
     public @ResponseBody
-    byte[] getImage(@PathVariable Long id, HttpServletResponse response) throws IOException {
-
-        Marker m = markerService.getById(id);
-        BufferedImage image = ImageIO.read(new File(imagePath + m.getUrl()));
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", bao);
-        return bao.toByteArray();
+    byte[] getImage(@PathVariable Long id, HttpServletResponse response) {
+        try {
+            return markerService.getImageById(id);
+        } catch (IOException ex) {
+            Logger.getLogger(IndexController.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
 
     }
 
@@ -334,4 +335,5 @@ public class IndexController {
         return "result";
 
     }
+    
 }

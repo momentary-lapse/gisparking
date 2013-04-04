@@ -7,9 +7,9 @@ package models.dao;
 
 
 import java.sql.Timestamp;
+import java.util.List;
 import models.entities.Marker;
 import models.interfaces.IMarkerDAO;
-import java.util.List;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +96,15 @@ public class MarkerDAO implements IMarkerDAO {
             return null;
         }
         return list.get(list.size() - 1);
+        
+    }
+    
+    @Transactional
+    @Override
+    public List<Marker> getOldMarkers(Timestamp timestamp) {
+        
+        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("stamp").le(timestamp));
+        return template.findByCriteria(criteria);
         
     }
     

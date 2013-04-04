@@ -11,7 +11,7 @@
             body {height: 100%; margin: 0%; padding: 0%}
             #map_canvas {height: 100%}
             #imdiv {height: 200px}
-            #content {max-height: 350px; max-width: 300px}
+            #content {max-height: 350px; max-width: 350px}
         </style>
         <script type="text/javascript" 
                 src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDbMnY6EFXaDYP_eBBwLFQgZuDS13bTdNc&sensor=true">
@@ -39,8 +39,8 @@
             
             function initialize() {
                 
-                lat = 55.1617;
-                lng = 61.401;
+                lat = ${lat};
+                lng = ${61.401};
                 tolat = 55.1617;
                 tolng = 61.401;
                 
