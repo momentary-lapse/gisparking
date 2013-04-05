@@ -65,7 +65,7 @@ public class MarkerDAO implements IMarkerDAO {
     @Override
     public List<Marker> getEnabledList() {
         
-        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("enabled").eq(1));
+        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("enabled").eq(true));
         return template.findByCriteria(criteria);
     }
     
@@ -78,26 +78,14 @@ public class MarkerDAO implements IMarkerDAO {
     
     @Transactional
     @Override
-    public int getPhoneRequestsNumberByTime(String phone, Timestamp timestamp) {
+    public int getPhoneRequestsNumberByTime(Long pid, Timestamp timestamp) {
         
-        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("phone").eq(phone));
+        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("pid").eq(pid));
         criteria.add(Property.forName("stamp").ge(timestamp));
         return template.findByCriteria(criteria).size();
         
     }
-    
-    @Transactional
-    @Override
-    public Marker getLastQuery(String phone) {
-        
-        DetachedCriteria criteria = DetachedCriteria.forClass(Marker.class).add(Property.forName("phone").eq(phone));
-        List<Marker> list =  template.findByCriteria(criteria);
-        if (list.isEmpty()) {
-            return null;
-        }
-        return list.get(list.size() - 1);
-        
-    }
+
     
     @Transactional
     @Override

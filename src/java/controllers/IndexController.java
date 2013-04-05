@@ -43,12 +43,12 @@ public class IndexController {
 
     
     final double chelLat = 55.17;
-    final double chelLng = 61.4;
+    final double chelLng = 61.388115;
     final int maxBadQueries = 5;
     final int maxQueriesPerDay = 25;
     final int maxBans = 5;
-    final int daysOfBan = 30;
-    final int timeToBan = 1000 * 60 * 60 * 24 * daysOfBan;
+    final long daysOfBan = 30;
+    final long timeToBan = 1000 * 60 * 60 * 24 * daysOfBan;
     @Autowired
     MarkerService markerService;
     @Autowired
@@ -102,9 +102,9 @@ public class IndexController {
         marker.put("lat", m.getLat());
         marker.put("lng", m.getLng());
         marker.put("address", m.getAddress());
-        marker.put("phone", m.getPhone());
+        marker.put("phone", phoneService.getById(m.getPid()).getPhone());
 
-        model.addAttribute("marker", marker.toJSONString());
+        model.addAttribute("marker", marker.toString());
         return "marker";
 
     }
@@ -122,13 +122,13 @@ public class IndexController {
     public String markerChoose(@PathVariable Long id, ModelMap model) {
 
         Marker m = markerService.getById(id);
-        if (m.getEnabled() == 0) {
+        if (!m.getEnabled()) {
             return "redirect:/result/busy";
         }
-        m.setEnabled(0);
+        m.setEnabled(false);
         markerService.update(m);
 
-        return "redirect:/start/{id}";
+        return "redirect:/result/success";
 
     }
 
@@ -136,16 +136,11 @@ public class IndexController {
     public String complainPhone(@PathVariable Long id, ModelMap model) {
 
         Marker m = markerService.getById(id);
-        Phone p = phoneService.getByPhone(m.getPhone());
+        Phone p = phoneService.getById(m.getPid());
 
         if (p == null) {
 
-            p = new Phone();
-            p.setPhone(m.getPhone());
-            p.setPriority(2);
-            phoneService.add(p);
-
-            return "redirect:/delete/" + id.toString();
+            return "redirect:/result/unknown";
 
         }
 
@@ -154,10 +149,10 @@ public class IndexController {
         phoneService.update(p);
 
         if (p.getPriority() >= maxBadQueries) {
-            Ban b = banService.getLastByPhone(p.getPhone());
+            Ban b = banService.getByPhone(p.getId());
             if (b == null) {
                 b = new Ban();
-                b.setPhone(p.getPhone());
+                b.setPid(p.getId());
                 b.setStamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
                 b.setNumber(1);
                 banService.add(b);
@@ -178,10 +173,10 @@ public class IndexController {
     public String markerCancel(@PathVariable Long id, ModelMap model) {
 
         Marker m = markerService.getById(id);
-        m.setEnabled(1);
+        m.setEnabled(true);
         markerService.update(m);
 
-        return "redirect:/start";
+        return "redirect:/result/success";
 
     }
 
@@ -197,13 +192,13 @@ public class IndexController {
             marker.put("lat", list.get(i).getLat());
             marker.put("lng", list.get(i).getLng());
             marker.put("address", list.get(i).getAddress());
-            marker.put("phone", list.get(i).getPhone());
+            marker.put("phone", phoneService.getById(list.get(i).getPid()).getPhone());
             markers.add(marker);
         }
         JSONObject result = new JSONObject();
         result.put("markers", markers);
 
-        model.addAttribute("list", result.toJSONString());
+        model.addAttribute("list", result.toString());
 
         return "list";
 
@@ -221,13 +216,13 @@ public class IndexController {
             marker.put("lat", list.get(i).getLat());
             marker.put("lng", list.get(i).getLng());
             marker.put("address", list.get(i).getAddress());
-            marker.put("phone", list.get(i).getPhone());
+            marker.put("phone", phoneService.getById(list.get(i).getPid()).getPhone());
             markers.add(marker);
         }
         JSONObject result = new JSONObject();
         result.put("markers", markers);
 
-        model.addAttribute("list", result.toJSONString());
+        model.addAttribute("list", result.toString());
 
         return "list";
 
@@ -258,7 +253,7 @@ public class IndexController {
 
             if (p.getPriority() >= maxBadQueries) {
 
-                Ban b = banService.getLastByPhone(phone);
+                Ban b = banService.getByPhone(p.getId());
                 Timestamp ts = new Timestamp(Calendar.getInstance().getTimeInMillis() - timeToBan);
 
                 if (b == null || (b.getStamp().before(ts) && b.getNumber() < maxBans)) {
@@ -269,7 +264,7 @@ public class IndexController {
                 }
             }
             Timestamp ts = new Timestamp(Calendar.getInstance().getTimeInMillis() - 1000 * 60 * 60 * 24);
-            int queries = markerService.getPhoneRequestsNumberByTime(p.getPhone(), ts);
+            int queries = markerService.getPhoneRequestsNumberByTime(p.getId(), ts);
             if (queries > maxQueriesPerDay) {
                 return "redirect:/result/overquery";
             }
@@ -305,10 +300,10 @@ public class IndexController {
         Marker m = new Marker();
         m.setLat(lat);
         m.setLng(lng);
-        m.setPhone(phone);
+        m.setPid(p.getId());
         m.setUrl(filename);
         m.setStamp(ts);
-        m.setEnabled(1);
+        m.setEnabled(true);
         m.setAddress(geocoder.getAddress());
 
         markerService.add(m);

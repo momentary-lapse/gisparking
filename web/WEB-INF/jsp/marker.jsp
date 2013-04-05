@@ -1,1 +1,1 @@
-${marker}
+<%@page contentType="application/json" pageEncoding="UTF-8"%>${marker}

@@ -14,7 +14,7 @@ public interface IBanDAO {
     public void delete(Ban ban);
     public void update(Ban ban);
     public Ban getById(Long id);
-    public Ban getLastByPhone(String phone);
+    public Ban getByPhone(Long phoneId);
     public List<Ban> getList();
     
 }

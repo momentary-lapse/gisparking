@@ -22,14 +22,14 @@ public class Marker implements Serializable {
     @Column(name="id", nullable=false, unique=true)
     private Long id;
     
-    @Column(name="north", nullable=false)
+    @Column(name="lat", nullable=false)
     private double lat;
     
-    @Column(name="east", nullable=false)
+    @Column(name="lng", nullable=false)
     private double lng;
     
-    @Column(name="phone", nullable=false)
-    private String phone;
+    @Column(name="pid", nullable=false)
+    private Long pid;
     
     @Column(name="url", nullable=false)
     private String url;
@@ -37,11 +37,11 @@ public class Marker implements Serializable {
     @Column(name="stamp", nullable=true)
     private Timestamp stamp;
     
-    @Column(name="enabled", nullable=false)
-    private int enabled;
-    
     @Column(name="address", nullable=false)
     private String address;
+    
+    @Column(name="enabled", nullable=false)
+    private Boolean enabled;
 
     public Long getId() {
         return id;
@@ -67,12 +67,12 @@ public class Marker implements Serializable {
         this.lat = lat;
     }
 
-    public String getPhone() {
-        return phone;
+    public Long getPid() {
+        return pid;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     public String getUrl() {
@@ -91,14 +91,6 @@ public class Marker implements Serializable {
         this.stamp = stamp;
     }
 
-    public int getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(int enabled) {
-        this.enabled = enabled;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -106,7 +98,14 @@ public class Marker implements Serializable {
     public void setAddress(String address) {
         this.address = address;
     }
-    
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }    
     
         
 }

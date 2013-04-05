@@ -10,8 +10,8 @@
             html {height: 100%}
             body {height: 100%; margin: 0%; padding: 0%}
             #map_canvas {height: 100%}
-            #imdiv {height: 200px}
-            #content {max-height: 350px; max-width: 350px}
+            #imdiv {height: 100px}
+            #content {max-height: 550px; max-width: 550px}
         </style>
         <script type="text/javascript" 
                 src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDbMnY6EFXaDYP_eBBwLFQgZuDS13bTdNc&sensor=true">
@@ -40,7 +40,7 @@
             function initialize() {
                 
                 lat = ${lat};
-                lng = ${61.401};
+                lng = ${lng};
                 tolat = 55.1617;
                 tolng = 61.401;
                 
@@ -83,7 +83,7 @@
                         
                         bounds.extend(markers[i].position);
                     
-                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Удалить и пожаловаться</a><br /><a href="#" onclick="interface.getMarker(${m.id})">Подробнее...</a></div>';
+                        contents[i] = '<div id="content">${m.address}<br /><div id="imdiv"><img src="/GISParking/images/${m.id}" height="100px" /></div><br /><a href="/GISParking/choose/${m.id}">Принять заявку</a><br /><a href="/GISParking/complain/${m.id}">Удалить и пожаловаться</a><br /><a href="#" onclick="interface.getMarker(${m.id})">Подробнее...</a></div>';
                         google.maps.event.addListener(markers[i], 'click', (function(i) {
                             return function() {
                                 infowindow.setContent(contents[i]);
@@ -115,7 +115,7 @@
                     
                     tolat = ${marker.lat};
                     tolng = ${marker.lng};
-                    content = '<div id="content">${marker.address}<br /><div id="imdiv"><img src="/GISParking/images/${marker.id}" /></div><br /><a href="/GISParking/cancel/${marker.id}">Отменить заявку</a><br /><a href="/GISParking/delete/${marker.id}">Удалить заявку</a></div>';
+                    content = '<div id="content">${marker.address}<br /><div id="imdiv"><img src="/GISParking/images/${marker.id}" height="100px" /></div><br /><a href="/GISParking/cancel/${marker.id}">Отменить заявку</a><br /><a href="/GISParking/delete/${marker.id}">Удалить заявку</a></div>';
                     infowindow.setContent(content);  
                     
                     showDirections();

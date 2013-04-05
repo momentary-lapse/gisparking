@@ -17,7 +17,6 @@ public interface IMarkerDAO {
     public Marker getById(Long id);
     public List<Marker> getEnabledList();
     public List<Marker> getFullList();
-    public int getPhoneRequestsNumberByTime(String phone, Timestamp timestamp);
-    public Marker getLastQuery(String phone);
+    public int getPhoneRequestsNumberByTime(Long pid, Timestamp timestamp);
     public List<Marker> getOldMarkers(Timestamp timestamp);
 }

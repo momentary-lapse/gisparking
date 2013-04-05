@@ -41,8 +41,8 @@ public class BanService {
         return banDAO.getById(id);
     }
     
-    public Ban getLastByPhone(String phone) {
-        return banDAO.getLastByPhone(phone);
+    public Ban getByPhone(Long phoneId) {
+        return banDAO.getByPhone(phoneId);
     }
     
     public List<Ban> getList() {

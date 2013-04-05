@@ -100,15 +100,9 @@ public class MarkerService {
         
     }
     
-    public int getPhoneRequestsNumberByTime(String phone, Timestamp timestamp) {
+    public int getPhoneRequestsNumberByTime(Long pid, Timestamp timestamp) {
         
-        return markerDAO.getPhoneRequestsNumberByTime(phone, timestamp);
-        
-    }
-    
-    public Marker getLastQuery(String phone) {
-        
-        return markerDAO.getLastQuery(phone);
+        return markerDAO.getPhoneRequestsNumberByTime(pid, timestamp);
         
     }
     

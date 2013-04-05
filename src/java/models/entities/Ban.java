@@ -22,8 +22,8 @@ public class Ban implements Serializable {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
     
-    @Column(name = "phone", nullable = false)
-    private String phone;
+    @Column(name = "pid", nullable = false)
+    private Long pid;
     
     @Column(name = "stamp", nullable = true)
     private Timestamp stamp;
@@ -38,14 +38,13 @@ public class Ban implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    
-    public String getPhone() {
-        return phone;
+
+    public Long getPid() {
+        return pid;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     public Timestamp getStamp() {

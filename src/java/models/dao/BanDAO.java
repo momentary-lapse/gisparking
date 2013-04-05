@@ -62,16 +62,16 @@ public class BanDAO implements IBanDAO {
     
     @Transactional
     @Override
-    public Ban getLastByPhone(String phone) {
+    public Ban getByPhone(Long phoneId) {
         
-        DetachedCriteria criteria = DetachedCriteria.forClass(Ban.class).add(Property.forName("phone").eq(phone));
+        DetachedCriteria criteria = DetachedCriteria.forClass(Ban.class).add(Property.forName("pid").eq(phoneId));
         List<Ban> list =  template.findByCriteria(criteria);
         
         if (list.isEmpty()) {
             return null;
         }
         
-        return list.get(list.size() - 1);
+        return list.get(0);
         
     }
     
