@@ -7,7 +7,8 @@ package models.entities;
 public class ClusterizedMarker extends Marker {
     
     int cluster;
-    double distance;
+    double distance;    
+    int priority = 1;
 
     /**
      * Рассчитать дистанцию от точки (например, эвакуатора) до маркера.<br>
@@ -33,6 +34,14 @@ public class ClusterizedMarker extends Marker {
 
     public void setDistance(double distance) {
         this.distance = distance;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public int getCluster() {
