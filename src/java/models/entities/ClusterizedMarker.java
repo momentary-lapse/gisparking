@@ -7,7 +7,7 @@ package models.entities;
 public class ClusterizedMarker extends Marker {
 
     int cluster;
-    double distance;
+    double distance;    
     int priority = 1;
 
     /**
