@@ -9,12 +9,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import javax.imageio.ImageIO;
 import models.ImageTransformer;
+import models.clusterization.Clusterizator;
+import models.entities.ClusterizedMarker;
 import models.entities.Marker;
 import models.interfaces.IMarkerDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +90,24 @@ public class MarkerService {
     public List<Marker> getEnabledList() {
         return markerDAO.getEnabledList();
     }
+    
+    public List<ClusterizedMarker> getClusterizedList(double lat, double lng) {
+        
+        List<Marker> enabledList = markerDAO.getEnabledList();
+        ClusterizedMarker[] enabledArray = new ClusterizedMarker[enabledList.size()];
+        for (int i = 0; i < enabledList.size(); i++) {
+            enabledArray[i] = new ClusterizedMarker(enabledList.get(i));
+            enabledArray[i].calculateDistance(lat, lng);
+        }
+        Clusterizator cl = new Clusterizator();
+        cl.clusterize(enabledArray);
+        
+        List<ClusterizedMarker> list = Arrays.asList(enabledArray);
+        
+        return list;
+        
+    }
+    
     
     public List<Marker> getFullList() {
         return markerDAO.getFullList();

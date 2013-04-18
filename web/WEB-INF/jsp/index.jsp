@@ -35,7 +35,9 @@
             var directionsService;
             var directionsDisplay;
             var image;
+            var images = [];
             var shadow;
+            var shadowdot;
             
             function initialize() {
                 
@@ -64,8 +66,19 @@
                 
                 map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
                 
-                image = 'https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png';
+                
+                image = 'https://maps.gstatic.com/mapfiles/ms2/micons/bus.png';
+                images[0] = 'https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png';
+                images[1] = 'https://maps.gstatic.com/mapfiles/ms2/micons/yellow-dot.png';
+                images[2] = 'https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png';
+                
                 shadow = {
+                    url: 'https://maps.gstatic.com/mapfiles/ms2/micons/bus.shadow.png',
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(16, 32)
+                };
+                
+                shadowdot = {
                     url: 'https://maps.gstatic.com/mapfiles/ms2/micons/msmarker.shadow.png',
                     origin: new google.maps.Point(0, 0),
                     anchor: new google.maps.Point(16, 32)
@@ -76,9 +89,13 @@
                 
             <c:if test="${empty marker}">
                 <c:forEach var="m" items="${markers}">
+                    
+                        var im = images[${m.cluster} - 1];
                         markers[i] = new google.maps.Marker({
                             position: new google.maps.LatLng(${m.lat}, ${m.lng}),
-                            map: map
+                            map: map,
+                            icon: im,
+                            shadow: shadowdot
                         });
                         
                         bounds.extend(markers[i].position);

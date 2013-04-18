@@ -28,6 +28,19 @@ public class ClusterizedMarker extends Marker {
         distance = 6371 * c;
     }
 
+    public ClusterizedMarker(Marker marker) {
+        setId(marker.getId());
+        setLat(marker.getLat());
+        setLng(marker.getLng());
+        setPid(marker.getPid());
+        setEnabled(marker.getEnabled());
+        setAddress(marker.getAddress());
+        setStamp(marker.getStamp());
+        setUrl(marker.getUrl());
+    }
+    
+    
+
     public double getDistance() {
         return distance;
     }

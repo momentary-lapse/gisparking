@@ -84,7 +84,7 @@ public class IndexController {
             lat = chelLat;
             lng = chelLng;
         }
-        model.addAttribute("markers", markerService.getEnabledList());
+        model.addAttribute("markers", markerService.getClusterizedList(lat, lng));
         model.addAttribute("lat", lat.doubleValue());
         model.addAttribute("lng", lng.doubleValue());
         
@@ -173,6 +173,9 @@ public class IndexController {
     public String markerCancel(@PathVariable Long id, ModelMap model) {
 
         Marker m = markerService.getById(id);
+        if (m == null) {
+            return "redirect:/result/unknown";
+        }
         m.setEnabled(true);
         markerService.update(m);
 
